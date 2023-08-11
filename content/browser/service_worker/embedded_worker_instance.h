@@ -189,7 +189,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void RemoveObserver(Listener* listener);
 
   void SetDevToolsAttached(bool attached);
-  bool devtools_attached() const { return devtools_attached_; }
+  bool devtools_attached() const { return true; }
 
   bool network_accessed_for_script() const {
     return network_accessed_for_script_;
