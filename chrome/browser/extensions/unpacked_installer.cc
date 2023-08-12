@@ -382,12 +382,16 @@ void UnpackedInstaller::InstallExtension() {
   // Force file access and/or incognito state and set install param if
   // requested.
   ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
-  if (allow_file_access_.has_value()) {
-    prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
-  }
-  if (allow_incognito_access_.has_value()) {
-    prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
-  }
+  // if (allow_file_access_.has_value()) {
+  //   prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
+  // }
+  // if (allow_incognito_access_.has_value()) {
+  //   prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
+  // }
+
+  prefs->SetAllowFileAccess(extension()->id(), true);
+  prefs->SetIsIncognitoEnabled(extension()->id(), true);
+
   if (install_param_.has_value()) {
     prefs->SetInstallParam(extension()->id(), *install_param_);
   }
