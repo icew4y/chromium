@@ -1,0 +1,193 @@
+{
+    "canvas_mask": "1486",
+	"canvas_path_fp":{
+		"x": "10",
+		"y": "10",
+		"radius": "5"
+	},
+    "webgl_fp": {
+        "UNMASKED_VENDOR_WEBGL":"Google Inc. (AMD)",
+        "UNMASKED_RENDERER_WEBGL":"ANGLE (NVIDIA, NVIDIA GeForce GTX 1080 6GB Direct3D11 vs_5_0 ps_5_0, D3D11-26.21.14.3200)",
+        "SUPPORTED_EXTENSIONS":[]
+    },
+	"audio_fp": "153",
+	"webgl_mask": "3519",
+	"metrics_text_width": "5",
+	"geolocation_setting": "ask",
+	"langs": "en-US",
+	"accept_lang": "en-US,en;q=0.9",
+	"platform": "Win32",
+	"screen": {
+		"height": "10800",
+		"width": "19200",
+		"availHeight": "10530",
+		"availWidth": "18480",
+		"availLeft": "720",
+		"availTop": "270"
+	},
+	"html_element_offset":{
+		"offset_width": "5",
+		"offset_height": "0"
+	},
+	"disable_background_mode": true,
+	"disable_webrtc": true,
+	"hardware_concurrency": "10",
+	"device_memory": "8",
+	"timezone": "America/New_York",
+	"geoposition": "38.894897,-77.036546,1000",
+	"clientrect_fp": "-2241",
+	"filltext_fp": {
+		"width": "20",
+		"height": "15",
+		"x": "6",
+		"y": "6"
+	},
+    "media_devices": [
+		{
+			"kind": "audioinput",
+			"label": "Microphone Array (Realtek High Definition Audio)"
+		},
+		{
+			"kind": "videoinput",
+			"label": "Integrated Camera (0efa:2831)"
+		},
+		{
+			"kind": "audiooutput",
+			"label": "Speaker/Headphone (Realtek High Definition Audio)"
+		}
+	],
+    "synthesis": [
+		{
+			"name": "Microsoft Thilini - Sinhala (Sri Lanka)",
+			"lang": "si-LK",
+			"default": false,
+			"localService": true
+		},
+		{
+			"name": "Microsoft Tuti - Sundanese (Indonesia)",
+			"lang": "su-ID",
+			"default": false,
+			"localService": true
+		},
+		{
+			"name": "Microsoft Ubax - Somali (Somalia)",
+			"lang": "so-SO",
+			"default": false,
+			"localService": true
+		},
+		{
+			"name": "Google Bahasa Indonesia",
+			"lang": "id-ID",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google Deutsch",
+			"lang": "de-DE",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google español",
+			"lang": "es-ES",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google español de Estados Unidos",
+			"lang": "es-US",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google français",
+			"lang": "fr-FR",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google italiano",
+			"lang": "it-IT",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google Nederlands",
+			"lang": "nl-NL",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google polski",
+			"lang": "pl-PL",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google português do Brasil",
+			"lang": "pt-BR",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google UK English Female",
+			"lang": "en-GB",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google UK English Male",
+			"lang": "en-GB",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google US English",
+			"lang": "en-US",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google русский",
+			"lang": "ru-RU",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google हिन्दी",
+			"lang": "hi-IN",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google 國語（臺灣）",
+			"lang": "zh-TW",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google 日本語",
+			"lang": "ja-JP",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google 한국의",
+			"lang": "ko-KR",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google 普通话（中国大陆）",
+			"lang": "zh-CN",
+			"default": false,
+			"localService": false
+		},
+		{
+			"name": "Google 粤語（香港）",
+			"lang": "zh-HK",
+			"default": false,
+			"localService": false
+		}
+	]
+}

@@ -110,7 +110,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 using AttributeChangedFunction =
@@ -2996,9 +2996,22 @@ int HTMLElement::offsetHeightForBinding() {
       this, DocumentUpdateReason::kJavaScript, CSSPropertyID::kHeight);
   int result = 0;
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    result = AdjustedOffsetForZoom(layout_object->OffsetHeight());
-    RecordScrollbarSizeForStudy(result, /* is_width= */ false,
-                                /* is_offset= */ true);
+    // result = AdjustedOffsetForZoom(layout_object->OffsetHeight());
+    // RecordScrollbarSizeForStudy(result, /* is_width= */ false,
+    //                             /* is_offset= */ true);
+
+    if (base::HasKey("html_element_offset")){
+      std::map<std::string, std::string> html_element_offset = base::GetDict("html_element_offset");
+      LOG(ERROR) << "html_element_offset size: " << html_element_offset.size();
+      if (html_element_offset.find("offset_height") != html_element_offset.end()){
+        int offset_height = std::stoi(html_element_offset["offset_height"]);
+        LOG(ERROR) << "html_element_offset offset_height: " << offset_height;
+        offset_height += layout_object->OffsetHeight().ToInt();
+        result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                     LayoutUnit(offset_height), layout_object->StyleRef())
+                     .Round();
+      }
+    }
   }
   return result;
 }

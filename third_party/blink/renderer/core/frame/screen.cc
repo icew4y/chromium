@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 namespace {
@@ -203,8 +203,30 @@ const display::ScreenInfo& Screen::GetScreenInfo() const {
 
   const auto& screen_infos = frame->GetChromeClient().GetScreenInfos(*frame);
   for (const auto& screen : screen_infos.screen_infos) {
-    if (screen.display_id == display_id_)
+    if (screen.display_id == display_id_){
+      if (base::HasKey("screen")){
+        std::map<std::string, std::string> screen_fp = base::GetDict("screen");
+        LOG(ERROR) << "dict 'screen' size: " << screen_fp.size();
+        int height = std::stod(screen_fp["height"]);
+        int width = std::stod(screen_fp["width"]);
+        int availHeight = std::stod(screen_fp["availHeight"]);
+        int availWidth = std::stod(screen_fp["availWidth"]);
+        int availLeft = std::stod(screen_fp["availLeft"]);
+        int availTop = std::stod(screen_fp["availTop"]);
+
+        DEFINE_STATIC_LOCAL(display::ScreenInfo, my_screen_info, ());
+
+        my_screen_info = screen;
+        my_screen_info.rect.set_height(height);
+        my_screen_info.rect.set_width(width);
+        my_screen_info.available_rect.set_height(availHeight);
+        my_screen_info.available_rect.set_width(availWidth);
+        my_screen_info.available_rect.set_x(availLeft);
+        my_screen_info.available_rect.set_y(availTop);
+        return my_screen_info;
+      }
       return screen;
+    }
   }
   DEFINE_STATIC_LOCAL(display::ScreenInfo, kEmptyScreenInfo, ());
   return kEmptyScreenInfo;

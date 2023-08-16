@@ -210,6 +210,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#include "base/extra_config/config.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #include "content/browser/android/java_interfaces_impl.h"
@@ -3429,6 +3431,8 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     // Allow this to be set when invoking the browser and relayed along.
     sandbox::policy::switches::kEnableSandboxLogging,
 #endif
+    // propagating this switch to the renderer process is needed
+    switches::kExtraConfig,
     switches::kAllowLoopbackInPeerConnection,
     switches::kAudioBufferSize,
     switches::kAutoplayPolicy,

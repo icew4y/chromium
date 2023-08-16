@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/rect_f.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 void CanvasPath::closePath() {
@@ -407,6 +407,15 @@ void CanvasPath::arc(double double_x,
                !std::isfinite(radius) || !std::isfinite(start_angle) ||
                !std::isfinite(end_angle)))
     return;
+  // add by Louis 2023-06-11 23:38:00
+  if (base::HasKey("canvas_path_fp")){
+    std::map<std::string, std::string> canvas_path_fp = base::GetDict("canvas_path_fp");
+    LOG(ERROR) << "canvas_path_fp: " << canvas_path_fp["x"] << ", " << canvas_path_fp["y"] << ", " << canvas_path_fp["radius"];
+    double_x += std::stod(canvas_path_fp["x"]);
+    double_y += std::stod(canvas_path_fp["y"]);
+    radius += std::stod(canvas_path_fp["radius"]);
+  }
+  // end
 
   if (UNLIKELY(radius < 0)) {
     exception_state.ThrowDOMException(

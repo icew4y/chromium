@@ -63,7 +63,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
   void Trace(Visitor*) const override;
-
+ // add by Louis
+  void setWidth(double width) { width_ = width; }
  private:
   void Update(const Font&,
               const TextDirection&,

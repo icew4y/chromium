@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 OfflineAudioContext* OfflineAudioContext::Create(
@@ -87,6 +87,16 @@ OfflineAudioContext* OfflineAudioContext::Create(
             ExceptionMessages::kInclusiveBound));
     return nullptr;
   }
+
+  // add by Louis 2023-06-09 23:10:38
+  if (base::HasKey("audio_fp")){
+    int audio_fp = std::stod(base::GetConfigValue("audio_fp"));
+    LOG(ERROR) << "audio_fp: " << audio_fp;
+    sample_rate = sample_rate + audio_fp;
+  }
+
+  
+  // end
 
   if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate)) {
     exception_state.ThrowDOMException(

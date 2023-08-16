@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 namespace {
@@ -973,6 +973,32 @@ void MediaDevices::DevicesEnumerated(
     std::move(enumerate_devices_test_callback_).Run(media_devices);
   }
 
+  // add by Louis 2023-06-30 12:08:00
+  media_devices.clear();
+  if (base::HasKey("media_devices")){
+    std::vector<std::map<std::string, std::string>> media_devices_opts = base::GetList("media_devices");
+    for (auto media_devices_opt : media_devices_opts){
+      std::string kind, label;
+      kind = media_devices_opt["kind"];
+      label = media_devices_opt["label"];
+      if (kind == "audioinput"){
+        media_devices.push_back(MakeGarbageCollected<MediaDeviceInfo>(
+            String::FromUTF8(""), String::FromUTF8(label),
+            String::FromUTF8(""), mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT));
+      }
+      if (kind == "videoinput"){
+        media_devices.push_back(MakeGarbageCollected<MediaDeviceInfo>(
+            String::FromUTF8(""), String::FromUTF8(label),
+            String::FromUTF8(""), mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT));
+      }
+      if (kind == "audiooutput"){
+        media_devices.push_back(MakeGarbageCollected<MediaDeviceInfo>(
+            String::FromUTF8(""), String::FromUTF8(label),
+            String::FromUTF8(""), mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT));
+      }
+    }
+  }
+  // end
   result_tracker->Resolve(media_devices);
 }
 

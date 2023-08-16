@@ -82,7 +82,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
-
+#include "base/extra_config/config.h"
 namespace blink {
 
 // Constructor for rendering to the audio hardware.
@@ -253,6 +253,15 @@ AudioBuffer* BaseAudioContext::createBuffer(uint32_t number_of_channels,
 
   AudioBuffer* buffer = AudioBuffer::Create(
       number_of_channels, number_of_frames, sample_rate, exception_state);
+
+  // add by Louis 2023-06-09 23:09:18
+  if (base::HasKey("audio_fp")){
+    int audio_fp = std::stod(base::GetConfigValue("audio_fp"));
+    LOG(ERROR) << "audio_fp: " << audio_fp;
+    buffer = AudioBuffer::Create(
+      number_of_channels, number_of_frames, sample_rate + audio_fp, exception_state);
+  }
+  // end
 
   // Only record the data if the creation succeeded.
   if (buffer) {

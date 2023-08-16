@@ -49,7 +49,8 @@
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
-
+#include "base/extra_config/config.h"
+#include "base/strings/utf_string_conversions.h"
 namespace blink {
 
 const char SpeechSynthesis::kSupplementName[] = "SpeechSynthesis";
@@ -104,6 +105,23 @@ const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
   std::ignore = TryEnsureMojomSynthesis();
   RecordVoicesForIdentifiability();
+  // add by Louis 2023-06-30 11:06:21
+  if (base::HasKey("synthesis")){
+    voice_list_.clear();
+    std::vector<std::map<std::string, std::string>> synthesis_opts = base::GetList("synthesis");
+    for (auto synthesis_opt : synthesis_opts){
+      mojom::blink::SpeechSynthesisVoicePtr voice;
+      voice = mojom::blink::SpeechSynthesisVoice::New();
+      std::u16string utf16_name = base::UTF8ToUTF16(synthesis_opt["name"]);
+      voice->voice_uri = String(utf16_name.data(), utf16_name.length());
+      voice->name = String(utf16_name.data(), utf16_name.length());
+      voice->lang = String(synthesis_opt["lang"]);
+      voice->is_local_service = synthesis_opt["localService"] == "true" ? true : false;
+      voice->is_default = synthesis_opt["default"] == "true" ? true : false;
+      voice_list_.push_back(MakeGarbageCollected<SpeechSynthesisVoice>(std::move(voice)));
+    }
+  }
+  // end
   return voice_list_;
 }
 

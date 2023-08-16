@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "base/extra_config/config.h"
 
 namespace blink {
 
@@ -1186,6 +1187,24 @@ void BaseRenderingContext2D::fillRect(double x,
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
+
+  std::map<std::string, std::string> filltext_fp = base::GetDict("filltext_fp");
+  LOG(ERROR) << "filltext_fp size: " << filltext_fp.size();
+  for (auto it = filltext_fp.begin(); it != filltext_fp.end(); it++) {
+    std::string key = it->first;
+    std::string value = it->second;
+    LOG(ERROR) << "key: " << key << ", value: " << value;
+    if (key == "x") {
+      x = std::stod(value);
+    } else if (key == "y") {
+      y = std::stod(value);
+    } else if (key == "width") {
+      width = std::stod(value);
+    } else if (key == "height") {
+      height = std::stod(value);
+    }
+  }
+
   gfx::RectF rect(ClampTo<float>(x), ClampTo<float>(y), ClampTo<float>(width),
                   ClampTo<float>(height));
   Draw<OverdrawOp::kNone>(

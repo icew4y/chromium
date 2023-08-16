@@ -82,7 +82,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "base/extra_config/config.h"
+#include "base/logging.h"
 namespace blink {
 
 // Try to restore context 4 times in the event that the context is lost. If the
@@ -941,7 +942,17 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
 
   TextDirection direction =
       ToTextDirection(GetState().GetDirection(), canvas());
-
+  // add by Louis 2023-06-15 13:27:32
+  if (base::HasKey("metrics_text_width")){
+      int metrics_text_width = std::stod(base::GetConfigValue("metrics_text_width"));
+      LOG(ERROR) << "metrics_text_width: " << metrics_text_width;
+      TextMetrics* metricsOfText = MakeGarbageCollected<TextMetrics>(font, direction,
+                                            GetState().GetTextBaseline(),
+                                            GetState().GetTextAlign(), text);
+      metricsOfText->setWidth(metrics_text_width + metricsOfText->width());
+      return metricsOfText;
+  }  
+  // end
   return MakeGarbageCollected<TextMetrics>(font, direction,
                                            GetState().GetTextBaseline(),
                                            GetState().GetTextAlign(), text);

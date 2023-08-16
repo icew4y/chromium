@@ -136,7 +136,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/size.h"
-
+#include "base/extra_config/config.h"
 // Populates parameters from texImage2D except for border, width, height, and
 // depth (which are not present for all texImage2D functions).
 #define POPULATE_TEX_IMAGE_2D_PARAMS(params) \
@@ -3759,6 +3759,18 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
               pname, IdentifiabilityBenignStringToken(
                          String(ContextGL()->GetString(GL_RENDERER))));
         }
+
+        // add by Louis 2023-06-09 20:54:13
+        if (base::HasKey("webgl_fp")){
+          std::map<std::string, std::string> webgl_fp = base::GetDict("webgl_fp");
+          if (webgl_fp.find("UNMASKED_RENDERER_WEBGL") != webgl_fp.end()){
+            std::string webgl_fp_renderer = webgl_fp["UNMASKED_RENDERER_WEBGL"];
+            return WebGLAny(script_state,
+                            String(webgl_fp_renderer));
+          }
+        }
+        // end
+
         return WebGLAny(script_state,
                         String(ContextGL()->GetString(GL_RENDERER)));
       }
@@ -3774,6 +3786,18 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
               pname, IdentifiabilityBenignStringToken(
                          String(ContextGL()->GetString(GL_VENDOR))));
         }
+
+        // add by Louis 2023-06-12 13:06:42
+        if (base::HasKey("webgl_fp")){
+          std::map<std::string, std::string> webgl_fp = base::GetDict("webgl_fp");
+          if (webgl_fp.find("UNMASKED_VENDOR_WEBGL") != webgl_fp.end()){
+            std::string webgl_fp_vendor = webgl_fp["UNMASKED_VENDOR_WEBGL"];
+            return WebGLAny(script_state,
+                            String(webgl_fp_vendor));
+          }
+        }
+        // end
+        
         return WebGLAny(script_state,
                         String(ContextGL()->GetString(GL_VENDOR)));
       }
