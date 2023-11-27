@@ -965,6 +965,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // cookie store, socket pool, etc.)
   raw_ptr<const URLRequestContext> context_;
 
+  std::string intercept_url_;
+  bool intercepted_;
+
   // Tracks the time spent in various load states throughout this request.
   NetLogWithSource net_log_;
 

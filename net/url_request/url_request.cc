@@ -45,8 +45,111 @@
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_netlog_params.h"
 #include "net/url_request/url_request_redirect_job.h"
+#include "net/url_request/url_request_filter.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#include "base/logging.h"
+#include "base/strings/string_util.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/values.h"
+#include "base/path_service.h"
+#include "net/url_request/url_request_interceptor.h"
+
+class MyCustomInterceptor : public net::URLRequestInterceptor {
+ public:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    
+    GURL url = request->url();
+    // const net::URLRequestContext* context = request->context();
+    // // Get the CookieStore from the URLRequestContext
+    // const net::CookieStore* cookie_store = context->cookie_store();
+
+    // if (cookie_store) {
+    //   // Define the URL for which you want to get cookies
+      
+
+    //   // request->SetReferrer("https://www.google.com/");
+    //   // request->SetExtraRequestHeaderByName("Origin", "what?", true);
+
+    //   // Asynchronously get cookies
+
+    //   // auto* non_const_cookie_store = const_cast<net::CookieStore*>(cookie_store);
+    //   //   non_const_cookie_store->GetCookieListWithOptionsAsync(url, net::CookieOptions::MakeAllInclusive(),    net::CookiePartitionKeyCollection(),
+    //   //   base::BindOnce([](const net::CookieAccessResultList& cookies, const net::CookieAccessResultList& excluded_cookies) {
+    //   //       // Handle cookies here
+    //   //       for (const auto& cookie : cookies) {
+    //   //           // Process each cookie
+    //   //           LOG(ERROR) << "Cookie: " << cookie.cookie.Name() << "=" << cookie.cookie.Value();
+    //   //       }
+    //   //     })
+    //   // );
+
+    //   // cookie_store->GetCookieListWithOptionsAsync(url, net::CookieOptions::MakeAllInclusive(), net::CookiePartitionKeyCollection(),
+    //   //   [](const net::CookieList& cookies) {
+    //   //     // Handle cookies here
+    //   //     for (const auto& cookie : cookies) {
+    //   //       // Process each cookie
+    //   //       LOG(INFO) << "Cookie: " << cookie.Name() << "=" << cookie.Value();
+    //   //     }
+    //   // });
+    // }
+
+    if (request->method() == "GET") {
+      LOG(ERROR) << "MyCustomInterceptor::MaybeInterceptRequest(), url: " << request->url().spec() << ", extra_request_headers:" << request->extra_request_headers().ToString();
+
+      std::map<std::string, std::string> custom_headers;
+      base::FilePath exe_path;
+      if (base::PathService::Get(base::FILE_EXE, &exe_path)) {
+        base::FilePath exe_dir = exe_path.DirName();
+        base::FilePath file_path = exe_dir.Append("test.json");
+        std::string file_contents;
+        if (base::ReadFileToString(file_path, &file_contents)) {
+          absl::optional<base::Value> json_value = base::JSONReader::Read(file_contents);
+          if (json_value) {
+            // Example: Accessing a field in the JSON object
+            if (json_value->is_dict()) {
+              base::Value::Dict* dict = json_value->GetIfDict();
+              
+              for (const auto pair : *dict) {
+                const std::string& key = pair.first;
+                const base::Value& value = pair.second;
+                if (!base::EqualsCaseInsensitiveASCII("url", key)){
+                  custom_headers[key] = value.GetString();
+                }
+              }
+            }
+          }
+        }else{
+          LOG(ERROR) << "MaybeInterceptRequest: Failed to read file!!! try add `--no-sandbox` option to run chrome";
+        }
+      }else{
+          LOG(ERROR) << "MaybeInterceptRequest: Failed on `PathService::Get(base::FILE_EXE, &exe_path)`";
+      }
+
+      for (auto pair : custom_headers) {
+        const std::string& key = pair.first;
+        const std::string& value = pair.second;
+
+        if (base::EqualsCaseInsensitiveASCII("referer", key)){
+          LOG(ERROR) << "SetReferrer: Key: " << key << ", Value: " << value;
+          request->SetReferrer(value);
+        }else{
+          LOG(ERROR) << "SetExtraRequestHeaderByName: Key: " << key << ", Value: " << value;
+          request->SetExtraRequestHeaderByName(key, value, true);
+        }
+      }
+
+      // request->SetReferrer("https://www.google.com/");
+      // request->SetExtraRequestHeaderByName("Origin", "what?", true);
+    }
+    return nullptr;
+  }
+};
+
 
 namespace net {
 
@@ -533,9 +636,58 @@ void URLRequest::set_allow_credentials(bool allow_credentials) {
   }
 }
 
+bool intercepted = false;
+
 void URLRequest::Start() {
   DCHECK(delegate_);
+  if (this->intercept_url_.empty()){
+    base::FilePath exe_path;
+    if (base::PathService::Get(base::FILE_EXE, &exe_path)) {
+      base::FilePath exe_dir = exe_path.DirName();
+      base::FilePath file_path = exe_dir.Append("test.json");
+      //LOG(ERROR) << "MaybeInterceptRequest: file_path: " << file_path;
+      std::string file_contents;
+      if (base::ReadFileToString(file_path, &file_contents)) {
+        absl::optional<base::Value> json_value = base::JSONReader::Read(file_contents);
+        if (json_value) {
+          // Example: Accessing a field in the JSON object
+          if (json_value->is_dict()) {
+            base::Value::Dict* dict = json_value->GetIfDict();
+            
+            for (const auto pair : *dict) {
+              const std::string& key = pair.first;
+              const base::Value& value = pair.second;
+              // if (value.is_string()) {
+              //   const std::string& string_value = value.GetString();
+              //   LOG(ERROR) << "Key: " << key << ", Value: " << string_value;
+              // }
+              if (base::EqualsCaseInsensitiveASCII("url", key)){
+                this->intercept_url_ = value.GetString();
+              }
+            }
+          }
+        }
+      }else{
+        LOG(ERROR) << "MaybeInterceptRequest: Failed to read file!!! try add `--no-sandbox` option to run chrome";
+      }
+  }
 
+  if (!this->intercept_url_.empty()){
+    std::string urlstr = this->url().spec();
+    if (urlstr == this->intercept_url_) {
+        LOG(ERROR) << "URLRequest::Start(), url: " << this->url().spec() <<" , extra_request_headers:" << extra_request_headers_.ToString() << ", Cookies: " << maybe_sent_cookies_.size();
+        if (!intercepted){
+          intercepted = true;
+          LOG(ERROR) << "intercepting :" << urlstr;
+          net::URLRequestFilter::GetInstance()->AddUrlInterceptor(GURL(urlstr), std::unique_ptr<net::URLRequestInterceptor>(
+                      new MyCustomInterceptor()));
+        }
+      }
+    }
+  }
+  
+
+  
   if (status_ != OK)
     return;
 
