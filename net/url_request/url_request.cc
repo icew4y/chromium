@@ -105,7 +105,7 @@ class MyCustomInterceptor : public net::URLRequestInterceptor {
       base::FilePath exe_path;
       if (base::PathService::Get(base::FILE_EXE, &exe_path)) {
         base::FilePath exe_dir = exe_path.DirName();
-        base::FilePath file_path = exe_dir.Append("test.json");
+        base::FilePath file_path = exe_dir.Append(FILE_PATH_LITERAL("test.json"));
         std::string file_contents;
         if (base::ReadFileToString(file_path, &file_contents)) {
           absl::optional<base::Value> json_value = base::JSONReader::Read(file_contents);
@@ -644,7 +644,7 @@ void URLRequest::Start() {
     base::FilePath exe_path;
     if (base::PathService::Get(base::FILE_EXE, &exe_path)) {
       base::FilePath exe_dir = exe_path.DirName();
-      base::FilePath file_path = exe_dir.Append("test.json");
+      base::FilePath file_path = exe_dir.Append(FILE_PATH_LITERAL("test.json"));
       //LOG(ERROR) << "MaybeInterceptRequest: file_path: " << file_path;
       std::string file_contents;
       if (base::ReadFileToString(file_path, &file_contents)) {

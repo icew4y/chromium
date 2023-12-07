@@ -43,6 +43,8 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
+#include "base/debug/stack_trace.h"
+#include "base/logging.h"
 namespace blink {
 
 Location::Location(DOMWindow* dom_window) : dom_window_(dom_window) {}
@@ -64,7 +66,11 @@ inline const KURL& Location::Url() const {
 }
 
 String Location::href() const {
-  return Url().StrippedForUseAsHref();
+  if (!this->custom_href_.empty()){
+    return this->custom_href_;
+  }else{
+    return Url().StrippedForUseAsHref();
+  }
 }
 
 String Location::protocol() const {
@@ -72,7 +78,11 @@ String Location::protocol() const {
 }
 
 String Location::host() const {
-  return DOMURLUtilsReadOnly::host(Url());
+  if (!this->custom_host_.empty()){
+    return this->custom_host_;
+  }else{
+    return DOMURLUtilsReadOnly::host(Url());
+  }
 }
 
 String Location::hostname() const {
@@ -92,7 +102,11 @@ String Location::search() const {
 }
 
 String Location::origin() const {
-  return DOMURLUtilsReadOnly::origin(Url());
+  if (!this->custom_origin_.empty()){
+    return this->custom_origin_;
+  }else{
+    return DOMURLUtilsReadOnly::origin(Url());
+  }
 }
 
 DOMStringList* Location::ancestorOrigins() const {
@@ -120,6 +134,9 @@ void Location::setHref(v8::Isolate* isolate,
                        ExceptionState& exception_state) {
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
+  LOG(ERROR) << "calling Location::setHref(), url_string: " << url_string;
+  this->custom_href_ = url_string;
+
   SetLocation(url_string, incumbent_window, entered_window, &exception_state);
 }
 
@@ -142,6 +159,9 @@ void Location::setHost(v8::Isolate* isolate,
                        const String& host,
                        ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
+  LOG(ERROR) << "calling Location::setHost(), url: " << url.GetString()
+             << ", host: " << host;
+  this->custom_host_ = host;
   url.SetHostAndPort(host);
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
@@ -199,6 +219,13 @@ void Location::setHash(v8::Isolate* isolate,
     return;
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
+}
+
+void Location::setOrigin(v8::Isolate* isolate,
+                         const String& origin,
+                         ExceptionState& exception_state) {
+  LOG(ERROR) << "calling Location::setOrigin(), origin: " << origin;
+  this->custom_origin_ = origin;
 }
 
 void Location::assign(v8::Isolate* isolate,
@@ -282,12 +309,12 @@ void Location::SetLocation(const String& url,
 
   FrameLoadRequest request(incumbent_window, resource_request);
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
-  WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
-  if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
-    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  // WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+  // if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
+  //   frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
   incumbent_window->GetFrame()->MaybeLogAdClickNavigation();
-  dom_window_->GetFrame()->Navigate(request, frame_load_type);
+  //dom_window_->GetFrame()->Navigate(request, frame_load_type);
 }
 
 Document* Location::GetDocument() const {

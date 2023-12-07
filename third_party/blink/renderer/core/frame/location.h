@@ -77,6 +77,7 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   String search() const;
   void setHash(v8::Isolate*, const String&, ExceptionState&);
   String hash() const;
+  void setOrigin(v8::Isolate*, const String&, ExceptionState&);
   String origin() const;
 
   DOMStringList* ancestorOrigins() const;
@@ -95,6 +96,11 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   // Note: it is only valid to call this if this is a Location object for a
   // LocalDOMWindow.
   Document* GetDocument() const;
+
+  //
+  String custom_host_;
+  String custom_href_;
+  String custom_origin_;
 
   // Returns true if the associated Window is the active Window in the frame.
   bool IsAttached() const;

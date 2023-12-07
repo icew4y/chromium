@@ -48,8 +48,9 @@
     [SetterCallWith=Isolate, CrossOrigin=Setter, RaisesException=Setter, LegacyUnforgeable] attribute USVString href;
     // TODO(yukishiino): Use [LegacyUnforgeable] stringifier instead of toString.
     [LegacyUnforgeable] DOMString toString();
-    [MeasureAs=LocationOrigin, LegacyUnforgeable] readonly attribute USVString origin;
+    // [MeasureAs=LocationOrigin, LegacyUnforgeable] readonly attribute USVString origin;
 
+    [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString origin;
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString protocol;
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString host;
     [SetterCallWith=Isolate, RaisesException=Setter, LegacyUnforgeable] attribute USVString hostname;
