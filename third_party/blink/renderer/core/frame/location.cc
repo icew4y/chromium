@@ -74,6 +74,9 @@ String Location::href() const {
 }
 
 String Location::protocol() const {
+  if (!this->custom_protocol_.empty()){
+    return this->custom_protocol_;
+  }
   return DOMURLUtilsReadOnly::protocol(Url());
 }
 
@@ -86,6 +89,9 @@ String Location::host() const {
 }
 
 String Location::hostname() const {
+  if (!this->custom_hostname_.empty()){
+    return this->custom_hostname_;
+  }
   return DOMURLUtilsReadOnly::hostname(Url());
 }
 
@@ -94,10 +100,16 @@ String Location::port() const {
 }
 
 String Location::pathname() const {
+  if (!this->custom_pathname_.empty()){
+    return this->custom_pathname_;
+  }
   return DOMURLUtilsReadOnly::pathname(Url());
 }
 
 String Location::search() const {
+  if (!this->custom_search_.empty()){
+    return this->custom_search_;
+  }
   return DOMURLUtilsReadOnly::search(Url());
 }
 
@@ -150,6 +162,7 @@ void Location::setProtocol(v8::Isolate* isolate,
         "'" + protocol + "' is an invalid protocol.");
     return;
   }
+  this->custom_protocol_ = protocol;
 
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
@@ -172,6 +185,7 @@ void Location::setHostname(v8::Isolate* isolate,
                            ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
   url.SetHost(hostname);
+  this->custom_hostname_ = hostname;
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
 }
@@ -189,6 +203,7 @@ void Location::setPathname(v8::Isolate* isolate,
                            const String& pathname,
                            ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
+  this->custom_pathname_ = pathname;
   url.SetPath(pathname);
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);
@@ -198,6 +213,7 @@ void Location::setSearch(v8::Isolate* isolate,
                          const String& search,
                          ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
+  this->custom_search_ = search;
   url.SetQuery(search);
   SetLocation(url.GetString(), IncumbentDOMWindow(isolate),
               EnteredDOMWindow(isolate), &exception_state);

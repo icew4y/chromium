@@ -101,6 +101,11 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   String custom_host_;
   String custom_href_;
   String custom_origin_;
+  String custom_pathname_;
+  String custom_protocol_;
+  String custom_search_;
+  String custom_hostname_;
+
 
   // Returns true if the associated Window is the active Window in the frame.
   bool IsAttached() const;
