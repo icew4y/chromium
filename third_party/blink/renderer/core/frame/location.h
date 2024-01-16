@@ -118,6 +118,11 @@ class CORE_EXPORT Location final : public ScriptWrappable {
                    LocalDOMWindow* entered_window,
                    ExceptionState* = nullptr,
                    SetLocationPolicy = SetLocationPolicy::kNormal);
+  void SetLocationForHref(const String&,
+                  LocalDOMWindow* incumbent_window,
+                  LocalDOMWindow* entered_window,
+                  ExceptionState* = nullptr,
+                  SetLocationPolicy = SetLocationPolicy::kNormal);
 
   const KURL& Url() const;
 

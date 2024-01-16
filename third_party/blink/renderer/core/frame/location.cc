@@ -147,9 +147,16 @@ void Location::setHref(v8::Isolate* isolate,
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
   LOG(ERROR) << "calling Location::setHref(), url_string: " << url_string;
-  this->custom_href_ = url_string;
 
-  SetLocation(url_string, incumbent_window, entered_window, &exception_state);
+  if (url_string.EndsWithIgnoringASCIICase("disablenav")){
+    String tmpurl = url_string;
+    const String pattern = "disablenav";
+    const String replacement = "";
+    this->custom_href_ = tmpurl.Replace(pattern, replacement);
+  }else
+    this->custom_href_ = url_string;
+
+  SetLocationForHref(url_string, incumbent_window, entered_window, &exception_state);
 }
 
 void Location::setProtocol(v8::Isolate* isolate,
@@ -325,12 +332,80 @@ void Location::SetLocation(const String& url,
 
   FrameLoadRequest request(incumbent_window, resource_request);
   request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+
+  // the reasone I comment this is because it won't be compiled due to unused variable
   // WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
   // if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
   //   frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
   incumbent_window->GetFrame()->MaybeLogAdClickNavigation();
   //dom_window_->GetFrame()->Navigate(request, frame_load_type);
+}
+
+void Location::SetLocationForHref(const String& url,
+                           LocalDOMWindow* incumbent_window,
+                           LocalDOMWindow* entered_window,
+                           ExceptionState* exception_state,
+                           SetLocationPolicy set_location_policy) {
+  if (!IsAttached())
+    return;
+
+  if (!incumbent_window->GetFrame())
+    return;
+
+  Document* entered_document = entered_window->document();
+  if (!entered_document)
+    return;
+
+  KURL completed_url = entered_document->CompleteURL(url);
+  if (completed_url.IsNull())
+    return;
+
+  if (!incumbent_window->GetFrame()->CanNavigate(*dom_window_->GetFrame(),
+                                                 completed_url)) {
+    if (exception_state) {
+      exception_state->ThrowSecurityError(
+          "The current window does not have permission to navigate the target "
+          "frame to '" +
+          url + "'.");
+    }
+    return;
+  }
+  if (exception_state && !completed_url.IsValid()) {
+    exception_state->ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                       "'" + url + "' is not a valid URL.");
+    return;
+  }
+
+  V8DOMActivityLogger* activity_logger =
+      V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld();
+  if (activity_logger) {
+    Vector<String> argv;
+    argv.push_back("LocalDOMWindow");
+    argv.push_back("url");
+    argv.push_back(entered_document->Url());
+    argv.push_back(completed_url);
+    activity_logger->LogEvent("blinkSetAttribute", argv.size(), argv.data());
+  }
+
+  ResourceRequestHead resource_request(completed_url);
+  resource_request.SetHasUserGesture(
+      LocalFrame::HasTransientUserActivation(incumbent_window->GetFrame()));
+
+  FrameLoadRequest request(incumbent_window, resource_request);
+  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+
+  // the reasone I comment this is because it won't be compiled due to unused variable
+  WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
+  if (set_location_policy == SetLocationPolicy::kReplaceThisFrame)
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+
+  incumbent_window->GetFrame()->MaybeLogAdClickNavigation();
+  if (url.EndsWithIgnoringASCIICase("disablenav")){
+    LOG(ERROR) << "disablenav for " << url;
+  }else{
+    dom_window_->GetFrame()->Navigate(request, frame_load_type);
+  }
 }
 
 Document* Location::GetDocument() const {
