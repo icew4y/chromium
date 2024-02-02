@@ -1366,34 +1366,37 @@ void LocalDOMWindow::alert(ScriptState* script_state, const String& message) {
   if (!GetFrame())
     return;
 
-  if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kModals)) {
-    UseCounter::Count(this, WebFeature::kDialogInSandboxedContext);
-    GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        GetFrame()->IsInFencedFrameTree()
-            ? "Ignored call to 'alert()'. The document is in a fenced frame "
-              "tree."
-            : "Ignored call to 'alert()'. The document is sandboxed, and the "
-              "'allow-modals' keyword is not set."));
-    return;
-  }
+  LOG(ERROR) << "alert~!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+  return;
 
-  if (IsRunningMicrotasks(script_state)) {
-    UseCounter::Count(this, WebFeature::kDuring_Microtask_Alert);
-  }
+  // if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kModals)) {
+  //   UseCounter::Count(this, WebFeature::kDialogInSandboxedContext);
+  //   GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
+  //       mojom::blink::ConsoleMessageSource::kSecurity,
+  //       mojom::blink::ConsoleMessageLevel::kError,
+  //       GetFrame()->IsInFencedFrameTree()
+  //           ? "Ignored call to 'alert()'. The document is in a fenced frame "
+  //             "tree."
+  //           : "Ignored call to 'alert()'. The document is sandboxed, and the "
+  //             "'allow-modals' keyword is not set."));
+  //   return;
+  // }
 
-  document()->UpdateStyleAndLayoutTree();
+  // if (IsRunningMicrotasks(script_state)) {
+  //   UseCounter::Count(this, WebFeature::kDuring_Microtask_Alert);
+  // }
 
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return;
+  // document()->UpdateStyleAndLayoutTree();
 
-  CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowAlert);
-  Deprecation::CountDeprecationCrossOriginIframe(
-      this, WebFeature::kCrossOriginWindowAlert);
+  // Page* page = GetFrame()->GetPage();
+  // if (!page)
+  //   return;
 
-  page->GetChromeClient().OpenJavaScriptAlert(GetFrame(), message);
+  // CountUseOnlyInSameOriginIframe(WebFeature::kSameOriginIframeWindowAlert);
+  // Deprecation::CountDeprecationCrossOriginIframe(
+  //     this, WebFeature::kCrossOriginWindowAlert);
+
+  // page->GetChromeClient().OpenJavaScriptAlert(GetFrame(), message);
 }
 
 bool LocalDOMWindow::confirm(ScriptState* script_state, const String& message) {

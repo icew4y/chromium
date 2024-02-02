@@ -1,0 +1,3 @@
+2024/01/26-09:46:03.342 f58e Reusing MANIFEST /home/louis/chromium/src/%~dp0profiles\%~1/Default/Sync Data/LevelDB/MANIFEST-000001
+2024/01/26-09:46:03.344 f58e Recovering log #3
+2024/01/26-09:46:03.344 f58e Reusing old log /home/louis/chromium/src/%~dp0profiles\%~1/Default/Sync Data/LevelDB/000003.log 
