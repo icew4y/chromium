@@ -1,6 +1,0 @@
-2024/01/26-09:46:03.626 f5a5 Reusing MANIFEST /home/louis/chromium/src/%~dp0profiles\%~1/Default/Session Storage/MANIFEST-000001
-2024/01/26-09:46:03.629 f5a5 Recovering log #4
-2024/01/26-09:46:03.631 f5a5 Reusing old log /home/louis/chromium/src/%~dp0profiles\%~1/Default/Session Storage/000004.log 
-2024/01/26-09:49:57.238 f5a5 Level-0 table #7: started
-2024/01/26-09:49:57.246 f5a5 Level-0 table #7: 17930 bytes OK
-2024/01/26-09:49:57.250 f5a5 Delete type=0 #4

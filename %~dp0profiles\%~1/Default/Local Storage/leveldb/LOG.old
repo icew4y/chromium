@@ -1,6 +1,0 @@
-2024/01/26-09:02:51.126 e5fa Reusing MANIFEST /home/louis/chromium/src/%~dp0profiles\%~1/Default/Local Storage/leveldb/MANIFEST-000001
-2024/01/26-09:02:51.131 e5fa Recovering log #7
-2024/01/26-09:02:51.133 e5fa Reusing old log /home/louis/chromium/src/%~dp0profiles\%~1/Default/Local Storage/leveldb/000007.log 
-2024/01/26-09:05:45.256 e5fa Level-0 table #11: started
-2024/01/26-09:05:45.265 e5fa Level-0 table #11: 11417 bytes OK
-2024/01/26-09:05:45.270 e5fa Delete type=0 #7

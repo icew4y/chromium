@@ -117,7 +117,7 @@ class ServiceWorkerTaskQueue::WorkerState {
   void SetWorkerId(const WorkerId& worker_id, ProcessManager* process_manager) {
     if (worker_id_ && *worker_id_ != worker_id) {
       // Sanity check that the old worker is gone.
-      //DCHECK(!process_manager->HasServiceWorker(*worker_id_));
+      DCHECK(!process_manager->HasServiceWorker(*worker_id_));
       // Clear stale renderer state if there's any.
       renderer_state_ = RendererState::kInitial;
     }

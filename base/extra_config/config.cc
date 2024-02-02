@@ -25,7 +25,7 @@ base::LazyInstance<absl::optional<base::Value>>::Leaky g_extra_config = LAZY_INS
 void init(){
     //LOG(ERROR) << "try to init g_extra_config";
     if (!g_extra_config.Get().has_value()){
-        //LOG(ERROR) << "g_extra_config not init, try to init";
+        LOG(ERROR) << "g_extra_config not init, try to init";
         base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
         if (command_line->HasSwitch("extra-config")){
             std::string extra_config = command_line->GetSwitchValueASCII("extra-config");

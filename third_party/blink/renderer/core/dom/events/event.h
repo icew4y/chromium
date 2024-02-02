@@ -276,7 +276,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   }
 
   bool isTrusted() const { return is_trusted_; }
-  void SetTrusted(bool value) { is_trusted_ = true; }
+  void SetTrusted(bool value) { is_trusted_ = value; }
 
   void SetComposed(bool composed) {
     DCHECK(!IsBeingDispatched());

@@ -1189,7 +1189,7 @@ void BaseRenderingContext2D::fillRect(double x,
   AdjustRectForCanvas(x, y, width, height);
 
   std::map<std::string, std::string> filltext_fp = base::GetDict("filltext_fp");
-  // LOG(ERROR) << "filltext_fp size: " << filltext_fp.size();
+  LOG(ERROR) << "filltext_fp size: " << filltext_fp.size();
   for (auto it = filltext_fp.begin(); it != filltext_fp.end(); it++) {
     std::string key = it->first;
     std::string value = it->second;
