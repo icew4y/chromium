@@ -3011,6 +3011,10 @@ int HTMLElement::offsetHeightForBinding() {
                      LayoutUnit(offset_height), layout_object->StyleRef())
                      .Round();
       }
+    }else{
+      result = AdjustedOffsetForZoom(layout_object->OffsetHeight());
+      RecordScrollbarSizeForStudy(result, /* is_width= */ false,
+                                  /* is_offset= */ true);
     }
   }
   return result;
