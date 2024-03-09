@@ -87,12 +87,15 @@ bool Navigator::cookieEnabled() const {
 }
 
 bool Navigator::webdriver() const {
-  if (RuntimeEnabledFeatures::AutomationControlledEnabled())
-    return true;
+  // add by louis
+  return false;
+  // end
+  // if (RuntimeEnabledFeatures::AutomationControlledEnabled())
+  //   return true;
 
-  bool automation_enabled = false;
-  probe::ApplyAutomationOverride(GetExecutionContext(), automation_enabled);
-  return automation_enabled;
+  // bool automation_enabled = false;
+  // probe::ApplyAutomationOverride(GetExecutionContext(), automation_enabled);
+  // return automation_enabled;
 }
 
 String Navigator::GetAcceptLanguages() {
