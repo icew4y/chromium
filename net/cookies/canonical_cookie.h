@@ -204,6 +204,9 @@ class NET_EXPORT CanonicalCookie {
 
   const std::string& Name() const { return name_; }
   const std::string& Value() const { return value_; }
+
+    // add by louis
+  void SetValue(std::string& v) { value_ = v; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in
   // Domain(). See IsDomainCookie() and IsHostCookie() below.
   // If you want the "cookie's domain" as described in RFC 6265bis, use

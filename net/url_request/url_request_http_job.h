@@ -56,6 +56,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   URLRequestHttpJob(const URLRequestHttpJob&) = delete;
   URLRequestHttpJob& operator=(const URLRequestHttpJob&) = delete;
 
+  // add by louis
+    void CookieAllListCallback(const CookieList& cookies);
+    //end
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
       ResponseHeadersCallback callback) override;

@@ -1205,10 +1205,32 @@ String HTMLCanvasElement::ToDataURLInternal(
 String HTMLCanvasElement::toDataURL(const String& mime_type,
                                     const ScriptValue& quality_argument,
                                     ExceptionState& exception_state) const {
+  
+  // add by louis
+  LOG(ERROR) << "calling HTMLCanvasElement::toDataURL";
+  CanvasRenderingContext::CanvasRenderingAPI api = this->RenderingContext()->GetRenderingAPI();
+  switch (api)
+  {
+  case CanvasRenderingContext::CanvasRenderingAPI::k2D:
+    LOG(ERROR) << "CanvasRenderingContext::CanvasRenderingAPI::k2D";
+    break;
+   case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
+    LOG(ERROR) << "CanvasRenderingContext::CanvasRenderingAPI::kWebgl";
+    break;
+  case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
+    LOG(ERROR) << "CanvasRenderingContext::CanvasRenderingAPI::kWebgl2";
+    break;
+  default:
+    break;
+  }
+
+  // return a new data url for spoofing here
+  // end add by louis
   if (!OriginClean()) {
     exception_state.ThrowSecurityError("Tainted canvases may not be exported.");
     return String();
   }
+
 
   double quality = kUndefinedQualityValue;
   if (!quality_argument.IsEmpty()) {

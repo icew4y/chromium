@@ -95,6 +95,9 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
@@ -629,10 +632,27 @@ void URLRequestHttpJob::AddExtraHeaders() {
   }
 }
 
+void URLRequestHttpJob::CookieAllListCallback(const CookieList& cookies) {
+  std::string urlstr = request_->url().spec();
+  if (urlstr.find("https://www.att.com/nFbBakF0FM/-btK6v4z/Bx/J5LOGNNzQhS7EE/XjtCLQ/FQoBG28/rJHI") != std::string::npos) {
+    std::string fullCookies = "";
+    for (const auto& cookie : cookies) {
+      //fullCookies += cookie.Name() + "=" + cookie.Value() + "; ";
+      fullCookies += cookie.DebugString() + "; ";
+    }
+    std::cout << "URL:" << urlstr << ", FullCookies:" << fullCookies << std::endl;
+  }
+}
+
 void URLRequestHttpJob::AddCookieHeaderAndStart() {
   CookieStore* cookie_store = request_->context()->cookie_store();
   DCHECK(cookie_store);
   DCHECK(ShouldAddCookieHeader());
+
+  // Added by louis
+  //std::string urlstr = request_->url().spec();
+  //cookie_store->GetAllCookiesAsync(base::BindOnce(&URLRequestHttpJob::CookieAllListCallback, weak_factory_.GetWeakPtr()));
+  // end
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
@@ -676,6 +696,18 @@ bool ShouldBlockUnpartitionedCookiesOnly(const PrivacyMode& privacy_mode) {
 
 }  // namespace
 
+std::vector<std::string> split(const std::string& str, const std::string& delimiter) {
+  std::vector<std::string> result;
+  size_t start = 0;
+  size_t end = str.find(delimiter);
+  while (end != std::string::npos) {
+    result.push_back(str.substr(start, end - start));
+    start = end + delimiter.length();
+    end = str.find(delimiter, start);
+  }
+  result.push_back(str.substr(start)); // Add the last token
+  return result;
+}
 void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieOptions& options,
     const CookieAccessResultList& cookies_with_access_result_list,
@@ -685,6 +717,57 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
   CookieAccessResultList maybe_included_cookies =
       cookies_with_access_result_list;
   CookieAccessResultList excluded_cookies = excluded_list;
+
+  // add by louis
+  std::string urlstr = request_->url().spec();
+  if (urlstr.find("https://www.att.com/msapi/payment/v1/paymentprofiles/addpaymentprofile") != std::string::npos) {
+    std::string fullcookie;
+    int counter = 0;
+    for (auto &c : maybe_included_cookies) {
+      if (c.cookie.Name() == "_abck") {
+        base::FilePath path_to_json = base::FilePath(FILE_PATH_LITERAL("D:\\abck.txt"));
+        std::string cookie_content;
+        if (!base::ReadFileToString(path_to_json, &cookie_content)) {
+          LOG(ERROR) << "Failed to read cookie file.";
+        }
+
+        cookie_content.erase(std::remove(cookie_content.begin(), cookie_content.end(), '\n'), cookie_content.cend());
+        auto v = std::string(cookie_content);
+        c.cookie.SetValue(v);
+      }
+      counter ++;
+    }
+    std::cout << ", counter:" << counter << std::endl;
+    //std::cout << "fullCookie:" << fullcookie << ", counter:" << counter << std::endl;
+
+    // read cookies from a file
+    // base::FilePath path_to_json = base::FilePath(FILE_PATH_LITERAL("D:\\cookies.txt"));
+    // std::string cookie_content;
+    // if (!base::ReadFileToString(path_to_json, &cookie_content)) {
+    //   LOG(ERROR) << "Failed to read cookie file.";
+    // }else {
+    //   // replace all the cookie inside `maybe_included_cookies`
+    //   auto access_cookie = maybe_included_cookies.at(0).access_result;
+    //   maybe_included_cookies.clear();
+    //   auto parts = split(cookie_content, ";");
+    //   CookieWithAccessResult ck;
+    //   for (auto part: parts) {
+    //     base::StringPiece url = "https://www.att.com/";
+    //     GURL gurl = GURL(url);
+    //
+    //     std::cout << "create new cookie, url" << gurl.spec() << ", part:" << part << std::endl;
+    //     auto cookie_ptr = CanonicalCookie::Create(gurl, part,
+    //       base::Time::Now(), base::Time::Now(), absl::nullopt);
+    //     ck.cookie = *cookie_ptr;
+    //     ck.access_result = access_cookie;
+    //     maybe_included_cookies.push_back(ck);
+    //   }
+    //
+    //   std::cout << ", new counter:" << maybe_included_cookies.size() << std::endl;
+    // }
+  }
+
+  // end
 
   if (ShouldBlockAllCookies(request_info_.privacy_mode)) {
     // If cookies are blocked (without our needing to consult the delegate),
